@@ -1,5 +1,6 @@
 import flet as ft
-import datetime as dt
+import requests
+import json
 
 def MeuAplicativo(page: ft.Page):
     page.bgcolor = ft.colors.WHITE
@@ -74,6 +75,16 @@ def MeuAplicativo(page: ft.Page):
                                 ft.TextButton(
                                     text="CALENDARIO",
                                     icon=ft.icons.CALENDAR_MONTH,
+                                    # width=400,
+                                )   
+                            ),
+                            width=400,
+                        ),
+                        ft.Container(
+                            content=(
+                                ft.TextButton(
+                                    text="AVISOS",
+                                    icon=ft.icons.WARNING_OUTLINED,
                                     # width=400,
                                 )   
                             ),
@@ -189,11 +200,26 @@ def MeuAplicativo(page: ft.Page):
         def cadastro(e):
             page.controls.clear()
             page.padding = ft.padding.only(top=50)
+            page.scroll = True
+            page.expand = True
+            
+            def salvar_dados(e):
+                link = "https://cadastro-de-membros-72952-default-rtdb.firebaseio.com/"
+                dados = {"PRIMEIRO_NOME": primeiro_nome.value, "SEGUNDO_NOME": segundo_nome.value, "DATA_NASCIMENTO": data_nascimento.value,
+                         "CPF": cpf_cadastro.value, "SEXO": sexo.value, "TELEFONE": telefone.value, "EMAIL": e_mail.value, "MEMBRO": membro.value, "CEP": cep.value,
+                         "ENDERECO": endereco.value, "COMPLEMENTO": complemento.value, "IGREJA": igreja.value, "BATIZADO": check_batizado.value,
+                         "DATA_BATISMO": data_batismo.value, "SENHA": confirmar_senha_cadastro.value, "ID_LOGIN": cpf_cadastro.value + "_" + confirmar_senha_cadastro.value}
+                requisicao = requests.post(f"{link}/MEMBROS/.json", data=json.dumps(dados))
+                print(requisicao)
+                print(requisicao.text)
+                print(primeiro_nome.value, segundo_nome.value, data_nascimento.value)
+            
             
             def yes_click(e):   
                 alert.open = False
                 page.controls.clear()
                 page.update()
+                salvar_dados(e=salvar_dados)
                 area_login(e=area_login)
 
             def no_click(e):
